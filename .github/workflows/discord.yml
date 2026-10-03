@@ -8,10 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send Discord message
+      - name: Send Discord messages
         env:
           WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
-          curl -H "Content-Type: application/json" \
-            -d '{"content":"@everyone CODE","allowed_mentions":{"parse":["everyone"]}}' \
-            "$WEBHOOK"
+          for i in {1..100}; do
+            curl -H "Content-Type: application/json" \
+              -d '{"content":"@everyone GET THE FUCK ONLINE","allowed_mentions":{"parse":["everyone"]}}' \
+              "$WEBHOOK"
+          done
