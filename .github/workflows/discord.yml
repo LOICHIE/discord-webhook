@@ -8,22 +8,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Send 20 messages to each channel
+      - name: Send and delete 20 messages per channel
         env:
           WEBHOOK1: ${{ secrets.DISCORD_WEBHOOK_1 }}
           WEBHOOK2: ${{ secrets.DISCORD_WEBHOOK_2 }}
           WEBHOOK3: ${{ secrets.DISCORD_WEBHOOK_3 }}
         run: |
-          for i in {1..30}; do
-            curl -sS -H "Content-Type: application/json" \
-              -d '{"content":"@everyone GET ONLINE"}' \
-              "$WEBHOOK1"
+          for WEBHOOK in "$WEBHOOK1" "$WEBHOOK2" "$WEBHOOK3"; do
+            for i in {1..20}; do
 
-            curl -sS -H "Content-Type: application/json" \
-              -d '{"content":"@everyone GET ONLINE"}' \
-              "$WEBHOOK2"
+              RESPONSE=$(curl -sS -X POST \
+                -H "Content-Type: application/json" \
+                -d '{"content":"@everyone GET THE FUCK ONLINE"}' \
+                "$WEBHOOK?wait=true")
 
-            curl -sS -H "Content-Type: application/json" \
-              -d '{"content":"@everyone GET ONLINE"}' \
-              "$WEBHOOK3"
+              MESSAGE_ID=$(echo "$RESPONSE" | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
+
+              curl -sS -X DELETE \
+                "$WEBHOOK/messages/$MESSAGE_ID"
+
+            done
           done
